@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import android.speech.tts.TextToSpeech;
+import android.widget.TextView;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -18,7 +19,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.Locale;
 
-//TESTKOMMENTAR
 public class MainActivity extends AppCompatActivity {
 
     TextToSpeech tts1;
@@ -36,17 +36,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-/*        tts1 = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener(){
-            @Override
-                public void onInit(){
-                    if(status != TextToSpeech.ERROR){
-                        tts1.setLanguage(Locale.GERMAN);
-                    }
-                }
 
-
-        ));
-*/
         android.speech.tts.TextToSpeech.OnInitListener tts_listener;
         tts_listener = new TextToSpeech.OnInitListener() {
             @Override
@@ -67,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
                 tts1.speak("Hier soll der aktuelle Ort und die Ausrichtung getriggert werden", TextToSpeech.QUEUE_ADD, null);
                 Snackbar.make(view, "Hier soll der aktuelle Ort und die Ausrichtung getriggert werden", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                final TextView textViewtoChange = (TextView) findViewById(R.id.location);
+                textViewtoChange.setText("new Text");
+
             }
         });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
