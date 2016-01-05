@@ -1,5 +1,9 @@
 package com.example.mirko.poi;
 
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,16 +16,19 @@ import android.view.MenuItem;
 
 import android.speech.tts.TextToSpeech;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.Locale;
+import java.util.jar.Manifest;
 
 public class MainActivity extends AppCompatActivity {
 
     TextToSpeech tts1;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -36,7 +43,18 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //Für das GPS
+        LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        LocationListener mloclistener = new MylocationListener();
 
+        //Erlaubnis muss abgefragt werden
+        int check;
+        check = checkCallingPermission("ACCESS_FINE_LOCATION");
+        Toast.makeText(getApplicationContext(), check + " CODE", Toast.LENGTH_LONG).show();
+
+        mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mloclistener);
+
+        //TextToSpeech Listener
         android.speech.tts.TextToSpeech.OnInitListener tts_listener;
         tts_listener = new TextToSpeech.OnInitListener() {
             @Override
@@ -47,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        //TextToSpeech
         tts1 = new TextToSpeech(getApplicationContext(), tts_listener);
 
 
@@ -59,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
 
                 final TextView textViewtoChange = (TextView) findViewById(R.id.location);
-                textViewtoChange.setText("new Text");
+                textViewtoChange.setText("new Text ");
 
             }
         });
@@ -67,6 +86,36 @@ public class MainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+    //Eigener Listener fürs GPS
+    public class MylocationListener implements LocationListener{
+
+        @Override
+        public void onLocationChanged(Location loc){
+            loc.getLatitude();
+            loc.getLongitude();
+
+            String text = "Meine position ist: " + loc.getLatitude() + " --- " + loc.getLongitude();
+
+            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onProviderDisabled(String provider){
+            Toast.makeText(getApplicationContext(), "GPS läuft nicht", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onProviderEnabled(String provider){
+            Toast.makeText(getApplicationContext(), "GPS läuft", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras){
+
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -129,4 +178,6 @@ public class MainActivity extends AppCompatActivity {
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
+
+
 }
