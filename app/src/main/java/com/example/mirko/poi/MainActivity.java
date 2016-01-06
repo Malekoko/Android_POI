@@ -1,6 +1,7 @@
 package com.example.mirko.poi;
 
 import android.content.Context;
+import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -138,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
         tts1 = new TextToSpeech(getApplicationContext(), tts_listener);
 
 
+        //Trigger auf den aktuellen Ort
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -151,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
                 //String la = Location.convert(mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude(), Location.FORMAT_DEGREES);
                 //Toast.makeText(getApplicationContext(), "Länge: " + lo + " Breite: " + la, Toast.LENGTH_SHORT).show();
 
-                //Test, ob überhaupt GPS-Signal da
-                if(!mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getProvider().isEmpty() ){
+                //TODO Test, ob überhaupt GPS-Signal da ist -- zurzeit Absturz
+                if(true){
 
                     //Entfernung Berechnen
                     for(MyPoiObject mpo : myPoiObjectArrayList){
