@@ -22,7 +22,9 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Map;
 import java.util.jar.Manifest;
 
 public class MainActivity extends AppCompatActivity {
@@ -44,17 +46,82 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //Für das GPS
-        LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        final LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         LocationListener mloclistener = new MylocationListener((TextView) findViewById(R.id.location));
 
         //Erlaubnis muss abgefragt werden - gibt aber -1 zurück ???
         int check;
         check = checkCallingPermission("android.permission.ACCESS_FINE_LOCATION");
-        Toast.makeText(getApplicationContext(), check + " CODE", Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), check + " CODE", Toast.LENGTH_LONG).show();
         //
 
         //GPS
         mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mloclistener);
+
+        //Points of Interest
+        final ArrayList<MyPoiObject> myPoiObjectArrayList = new ArrayList<MyPoiObject>();
+
+        Location loc1 = new Location("Fakultät Informatik");
+        loc1.setLatitude(51.0256633);
+        loc1.setLongitude(13.7227522);
+        MyPoiObject mpo1 = new MyPoiObject(loc1, "Herzlich willkommen an der Fakultät Informatik. " +
+                "Mit über 1800 Studierenden gehört die Fakultät Informatik an der Exzellenz-Universität " +
+                "TU Dresden zu den größten Ausbildungsstätten für Informatik in Deutschland. " +
+                "Hier gibt es 11 verschiedene Studiengänge, die mit Bachelor, Master oder Diplom " +
+                "(inzwischen eine Besonderheit in Deutschland) abgeschlossen werden können");
+
+        myPoiObjectArrayList.add(mpo1);
+
+        Location loc2 = new Location("Alte Mensa");
+        loc2.setLatitude(51.026720);
+        loc2.setLongitude(13.726636);
+        MyPoiObject mpo2 = new MyPoiObject(loc2, "3 Komplettgerichte, davon eins fleischlos, Auflauf & Gratin, " +
+                "Pizza & Pasta, Grill & Wok, Topf & Terrine, Salat- und Dessertbuffet, " +
+                "umfangreiches Cafeteria-Sortiment");
+
+        myPoiObjectArrayList.add(mpo2);
+
+        Location loc3 = new Location("Münchner Platz");
+        loc3.setLatitude(51.029906);
+        loc3.setLongitude(13.721103);
+        MyPoiObject mpo3 = new MyPoiObject(loc3, "Das zwischen 1902 und 1907 errichtete Gebäude, das als " +
+                "königlich-sächsisches Landgericht eröffnet wurde, diente in der Zeit des Nationalsozialismus, " +
+                "während der sowjetischen Besatzung und der DDR-Diktatur bis 1956 als Gericht, Gefängnis " +
+                "und zentrale Hinrichtungsstätte. Auf dem Hof des Gebäudekomplexes gab es eine Fallschwertmaschine, " +
+                "die der Vollstreckung von Todesstrafen diente. Insgesamt kamen hier mehr als 1.300 Menschen ums Leben. " +
+                "Etwa zwei Drittel der Opfer kamen aus dem Reichsprotektorat Böhmen und Mähren, " +
+                "da die Exekutionen der Sondergerichte Prag und Brünn hier durchgeführt wurden." +
+                "Am 15. Februar 1945 wurden beim Angriff auf Dresden Teile des Gebäudes durch " +
+                "Bomben beschädigt oder zerstört.");
+
+        myPoiObjectArrayList.add(mpo3);
+
+        Location loc4 = new Location("Nürnberger Platz");
+        loc4.setLatitude(51.031489);
+        loc4.setLongitude(13.727314);
+        MyPoiObject mpo4 = new MyPoiObject(loc4, "An der Nürnberger Straße entstanden von 1900 bis 1905 von " +
+                "der Dresdner Baugesellschaft großbürgerliche Wohnhäuser. An der Nürnberger Straße in Höhe " +
+                "Liebigstraße sollte ursprünglich ein Sakralbau entstehen, wofür auch ein ovaler Platz, das " +
+                "heutige Nürnberger Ei, angelegt wurde.");
+
+        myPoiObjectArrayList.add(mpo4);
+
+        Location loc5 = new Location("Neue Mensa");
+        loc5.setLatitude(51.028972);
+        loc5.setLongitude(13.731741);
+        MyPoiObject mpo5 = new MyPoiObject(loc5, "Aufgrund des schlechten baulichen Zustands sind die Mensa " +
+                "und auch die Cafeteria geschlossen. Ersatzweise steht Ihnen unsere Übergangsmensa " +
+                "„Zeltschlösschen“ an der Nürnberger Straße zur Verfügung:");
+
+        myPoiObjectArrayList.add(mpo5);
+
+        Location loc6 = new Location("Heeme");
+        loc6.setLongitude(13.75278);
+        loc6.setLatitude(51.06182);
+        MyPoiObject mpo6 = new MyPoiObject(loc6, "Hier ist die Zentrale der Finsternis");
+        myPoiObjectArrayList.add(mpo6);
+
+
 
         //TextToSpeech Listener
         android.speech.tts.TextToSpeech.OnInitListener tts_listener;
@@ -75,9 +142,35 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tts1.speak("Hier soll der aktuelle Ort und die Ausrichtung getriggert werden", TextToSpeech.QUEUE_ADD, null);
-                Snackbar.make(view, "Hier soll der aktuelle Ort und die Ausrichtung getriggert werden", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                //Snackbar.make(view, "Hier soll der aktuelle Ort und die Ausrichtung getriggert werden", Snackbar.LENGTH_LONG)
+                //        .setAction("Action", null).show();
+
+                //CHECK -> keine Ahnung
+                int check1 = checkCallingPermission("android.permission.ACCESS_FINE_LOCATION");
+                //String lo = Location.convert(mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLongitude(), Location.FORMAT_DEGREES);
+                //String la = Location.convert(mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude(), Location.FORMAT_DEGREES);
+                //Toast.makeText(getApplicationContext(), "Länge: " + lo + " Breite: " + la, Toast.LENGTH_SHORT).show();
+
+                //Test, ob überhaupt GPS-Signal da
+                if(!mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getProvider().isEmpty() ){
+
+                    //Entfernung Berechnen
+                    for(MyPoiObject mpo : myPoiObjectArrayList){
+                        float dist = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).distanceTo(mpo.getLoc());
+
+                        //wenn man weniger als 150m vom Ziel Entfernt ist, gibts ein Ergebnis
+                        if(dist < 150){
+                            Toast.makeText(getApplicationContext(), "Entfernung zu " + mpo.getLoc().getProvider() + ": " + dist + " m", Toast.LENGTH_SHORT).show();
+                            tts1.speak(mpo.getLoc().getProvider(), TextToSpeech.QUEUE_ADD, null);
+                            tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
+                            tts1.speak("Info", TextToSpeech.QUEUE_ADD, null);
+                            tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
+                            tts1.speak(mpo.getInfo(), TextToSpeech.QUEUE_ADD, null);
+                        }
+                    }
+                }
+
+
 
             }
         });
@@ -110,8 +203,8 @@ public class MainActivity extends AppCompatActivity {
             //String lati = Location.convert(loc.getLongitude(), Location.FORMAT_SECONDS);
 
             //Gradschreibweise
-            String longi = Location.convert(loc.getLatitude(), Location.FORMAT_DEGREES);
-            String lati = Location.convert(loc.getLongitude(), Location.FORMAT_DEGREES);
+            String longi = Location.convert(loc.getLongitude(), Location.FORMAT_DEGREES);
+            String lati = Location.convert(loc.getLatitude(), Location.FORMAT_DEGREES);
 
             textView.setText("Länge: " + longi + " Breite: " + lati);
         }
@@ -132,6 +225,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public class MyPoiObject{
+        Location loc;
+        String info;
+
+        public MyPoiObject(Location l, String text){
+            loc = l;
+            info = text;
+        }
+
+        public Location getLoc(){
+            return loc;
+        }
+
+        public String getInfo(){
+            return info;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
