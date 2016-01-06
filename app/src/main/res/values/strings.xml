@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">POI</string>
-    <string name="action_settings">Settings</string>
-    <string name="location">Coordinates,,,</string>
+    <string name="action_settings">Close</string>
+    <string name="location">If you can read this, your GPS-Modul maybe does not work properly.</string>
 </resources>

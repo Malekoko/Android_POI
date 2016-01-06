@@ -45,13 +45,15 @@ public class MainActivity extends AppCompatActivity {
 
         //Für das GPS
         LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        LocationListener mloclistener = new MylocationListener();
+        LocationListener mloclistener = new MylocationListener((TextView) findViewById(R.id.location));
 
-        //Erlaubnis muss abgefragt werden
+        //Erlaubnis muss abgefragt werden - gibt aber -1 zurück ???
         int check;
-        check = checkCallingPermission("ACCESS_FINE_LOCATION");
+        check = checkCallingPermission("android.permission.ACCESS_FINE_LOCATION");
         Toast.makeText(getApplicationContext(), check + " CODE", Toast.LENGTH_LONG).show();
+        //
 
+        //GPS
         mlocManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mloclistener);
 
         //TextToSpeech Listener
@@ -77,9 +79,6 @@ public class MainActivity extends AppCompatActivity {
                 Snackbar.make(view, "Hier soll der aktuelle Ort und die Ausrichtung getriggert werden", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                final TextView textViewtoChange = (TextView) findViewById(R.id.location);
-                textViewtoChange.setText("new Text ");
-
             }
         });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -90,14 +89,31 @@ public class MainActivity extends AppCompatActivity {
     //Eigener Listener fürs GPS
     public class MylocationListener implements LocationListener{
 
+        TextView textView;
+
+        public MylocationListener(TextView FormTextView){
+            textView = FormTextView;
+        }
+
         @Override
         public void onLocationChanged(Location loc){
             loc.getLatitude();
             loc.getLongitude();
 
-            String text = "Meine position ist: " + loc.getLatitude() + " --- " + loc.getLongitude();
+            //TEST
+            //String text = "Meine position ist: " + loc.getLatitude() + " --- " + loc.getLongitude();
+            //Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            //textView.setText("Latitude: " + loc.getLatitude() + " Longitude: " + loc.getLongitude());
 
-            Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+            //Sekundenschreibweise
+            //String longi = Location.convert(loc.getLatitude(), Location.FORMAT_SECONDS);
+            //String lati = Location.convert(loc.getLongitude(), Location.FORMAT_SECONDS);
+
+            //Gradschreibweise
+            String longi = Location.convert(loc.getLatitude(), Location.FORMAT_DEGREES);
+            String lati = Location.convert(loc.getLongitude(), Location.FORMAT_DEGREES);
+
+            textView.setText("Länge: " + longi + " Breite: " + lati);
         }
 
         @Override
@@ -133,7 +149,8 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            System.exit(0);
+            //return true;
         }
 
         return super.onOptionsItemSelected(item);
