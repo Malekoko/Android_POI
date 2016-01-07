@@ -1,6 +1,10 @@
 package com.example.mirko.poi;
 
+import android.app.Activity;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationListener;
@@ -25,7 +29,6 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Map;
 import java.util.jar.Manifest;
 
 public class MainActivity extends AppCompatActivity {
@@ -63,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
         final ArrayList<MyPoiObject> myPoiObjectArrayList = new ArrayList<MyPoiObject>();
 
         Location loc1 = new Location("Fakultät Informatik");
-        loc1.setLatitude(51.0256633);
-        loc1.setLongitude(13.7227522);
+        loc1.setLatitude(51.0257778);
+        loc1.setLongitude(13.722597222222223);
         MyPoiObject mpo1 = new MyPoiObject(loc1, "Herzlich willkommen an der Fakultät Informatik. " +
                 "Mit über 1800 Studierenden gehört die Fakultät Informatik an der Exzellenz-Universität " +
                 "TU Dresden zu den größten Ausbildungsstätten für Informatik in Deutschland. " +
@@ -74,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
         myPoiObjectArrayList.add(mpo1);
 
         Location loc2 = new Location("Alte Mensa");
-        loc2.setLatitude(51.026720);
-        loc2.setLongitude(13.726636);
+        loc2.setLatitude(51.0266944);
+        loc2.setLongitude(13.72653611111111);
         MyPoiObject mpo2 = new MyPoiObject(loc2, "3 Komplettgerichte, davon eins fleischlos, Auflauf & Gratin, " +
                 "Pizza & Pasta, Grill & Wok, Topf & Terrine, Salat- und Dessertbuffet, " +
                 "umfangreiches Cafeteria-Sortiment");
@@ -83,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         myPoiObjectArrayList.add(mpo2);
 
         Location loc3 = new Location("Münchner Platz");
-        loc3.setLatitude(51.029906);
-        loc3.setLongitude(13.721103);
+        loc3.setLatitude(51.0299944);
+        loc3.setLongitude(13.721733333333333);
         MyPoiObject mpo3 = new MyPoiObject(loc3, "Das zwischen 1902 und 1907 errichtete Gebäude, das als " +
                 "königlich-sächsisches Landgericht eröffnet wurde, diente in der Zeit des Nationalsozialismus, " +
                 "während der sowjetischen Besatzung und der DDR-Diktatur bis 1956 als Gericht, Gefängnis " +
@@ -98,8 +101,8 @@ public class MainActivity extends AppCompatActivity {
         myPoiObjectArrayList.add(mpo3);
 
         Location loc4 = new Location("Nürnberger Platz");
-        loc4.setLatitude(51.031489);
-        loc4.setLongitude(13.727314);
+        loc4.setLatitude(51.0321111);
+        loc4.setLongitude(13.726158333333334);
         MyPoiObject mpo4 = new MyPoiObject(loc4, "An der Nürnberger Straße entstanden von 1900 bis 1905 von " +
                 "der Dresdner Baugesellschaft großbürgerliche Wohnhäuser. An der Nürnberger Straße in Höhe " +
                 "Liebigstraße sollte ursprünglich ein Sakralbau entstehen, wofür auch ein ovaler Platz, das " +
@@ -108,8 +111,8 @@ public class MainActivity extends AppCompatActivity {
         myPoiObjectArrayList.add(mpo4);
 
         Location loc5 = new Location("Neue Mensa");
-        loc5.setLatitude(51.028972);
-        loc5.setLongitude(13.731741);
+        loc5.setLatitude(51.0288806);
+        loc5.setLongitude(13.731927777777777);
         MyPoiObject mpo5 = new MyPoiObject(loc5, "Aufgrund des schlechten baulichen Zustands sind die Mensa " +
                 "und auch die Cafeteria geschlossen. Ersatzweise steht Ihnen unsere Übergangsmensa " +
                 "„Zeltschlösschen“ an der Nürnberger Straße zur Verfügung:");
@@ -117,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
         myPoiObjectArrayList.add(mpo5);
 
         Location loc6 = new Location("Heeme");
-        loc6.setLongitude(13.75278);
-        loc6.setLatitude(51.06182);
+        loc6.setLongitude(13.7525732);
+        loc6.setLatitude(51.0621029);
         MyPoiObject mpo6 = new MyPoiObject(loc6, "Hier ist die Zentrale der Finsternis");
         myPoiObjectArrayList.add(mpo6);
 
@@ -153,27 +156,41 @@ public class MainActivity extends AppCompatActivity {
                 //String la = Location.convert(mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).getLatitude(), Location.FORMAT_DEGREES);
                 //Toast.makeText(getApplicationContext(), "Länge: " + lo + " Breite: " + la, Toast.LENGTH_SHORT).show();
 
-                //TODO Test, ob überhaupt GPS-Signal da ist -- zurzeit Absturz
-                if(true){
+                //Stop, falls man sich den Text nicht anhören will
+                if(tts1.isSpeaking()){
+                    tts1.stop();
+                }else {
 
-                    //Entfernung Berechnen
-                    for(MyPoiObject mpo : myPoiObjectArrayList){
-                        float dist = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).distanceTo(mpo.getLoc());
+                    //TODO Test, ob überhaupt GPS-Signal da ist -- zurzeit Absturz
+                    if(true){
 
-                        //wenn man weniger als 150m vom Ziel Entfernt ist, gibts ein Ergebnis
-                        if(dist < 150){
-                            Toast.makeText(getApplicationContext(), "Entfernung zu " + mpo.getLoc().getProvider() + ": " + dist + " m", Toast.LENGTH_SHORT).show();
-                            tts1.speak(mpo.getLoc().getProvider(), TextToSpeech.QUEUE_ADD, null);
-                            tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
-                            tts1.speak("Info", TextToSpeech.QUEUE_ADD, null);
-                            tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
-                            tts1.speak(mpo.getInfo(), TextToSpeech.QUEUE_ADD, null);
+                        //Entfernung Berechnen
+                        for(MyPoiObject mpo : myPoiObjectArrayList){
+                            float dist = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).distanceTo(mpo.getLoc());
+
+                            //wenn man weniger als 150m vom Ziel Entfernt ist, gibts ein Ergebnis
+                            if(dist < 150){
+
+                                //Ausrichtung/Orientation
+
+                                float bearing = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).bearingTo(mpo.getLoc());
+                                Toast.makeText(getApplicationContext(), "bearing: " + bearing, Toast.LENGTH_LONG).show();
+
+
+
+                                //
+
+
+                                Toast.makeText(getApplicationContext(), "Entfernung zu " + mpo.getLoc().getProvider() + ": " + dist + " m", Toast.LENGTH_SHORT).show();
+                                tts1.speak(mpo.getLoc().getProvider(), TextToSpeech.QUEUE_ADD, null);
+                                tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
+                                tts1.speak("Info", TextToSpeech.QUEUE_ADD, null);
+                                tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
+                                tts1.speak(mpo.getInfo(), TextToSpeech.QUEUE_ADD, null);
+                            }
                         }
                     }
                 }
-
-
-
             }
         });
         // ATTENTION: This was auto-generated to implement the App Indexing API.
@@ -226,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+
 
     public class MyPoiObject{
         Location loc;
