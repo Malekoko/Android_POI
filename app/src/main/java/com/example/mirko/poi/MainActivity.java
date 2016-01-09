@@ -3,6 +3,7 @@ package com.example.mirko.poi;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.GpsStatus;
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
 
     TextToSpeech tts1;
 
+    private SensorManager mSensorManager;
+    private  MySensorListener mSensorListener;
+
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -48,6 +52,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        mSensorListener = new MySensorListener((TextView) findViewById(R.id.heading));
+        mSensorManager.registerListener(mSensorListener, mSensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION), SensorManager.SENSOR_DELAY_GAME);
+
 
         //Für das GPS
         final LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
@@ -174,9 +183,13 @@ public class MainActivity extends AppCompatActivity {
                                 //Ausrichtung/Orientation
 
                                 float bearing = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER).bearingTo(mpo.getLoc());
-                                Toast.makeText(getApplicationContext(), "bearing: " + bearing, Toast.LENGTH_LONG).show();
+                                //Toast.makeText(getApplicationContext(), "bearing: " + bearing, Toast.LENGTH_LONG).show();
+                                TextView tv = (TextView) findViewById(R.id.bearing);
+                                tv.setText("Bearing: " + Float.toString((bearing + 360) % 360));
 
+                                TextView tv2 = (TextView) findViewById(R.id.calc_heading);
 
+                                tv2.setText("Calculated Heading: " + Float.toString(((bearing + 360) % 360) - mSensorListener.getDegree() ));
 
                                 //
 
@@ -196,6 +209,38 @@ public class MainActivity extends AppCompatActivity {
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    //Listener für Sensoren
+    public class MySensorListener implements SensorEventListener{
+
+        TextView textView;
+        float degree;
+
+        public MySensorListener(TextView FormTextView){
+
+            textView = FormTextView;
+            //Toast.makeText(getApplicationContext(), "MySensorListener created", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onSensorChanged(SensorEvent event){
+
+            //angle around the z-axis
+            degree = Math.round(event.values[0]);
+
+            //Toast.makeText(getApplicationContext(), "Heading: " + Float.toString(degree), Toast.LENGTH_SHORT).show();
+            textView.setText("Heading: " + Float.toString(degree));
+        }
+
+        public float getDegree(){
+            return degree;
+        }
+
+        @Override
+        public void onAccuracyChanged(Sensor sensor, int accuracy){
+            //not in use
+        }
     }
 
     //Eigener Listener fürs GPS
@@ -323,6 +368,9 @@ public class MainActivity extends AppCompatActivity {
                 // TODO: Make sure this auto-generated app deep link URI is correct.
                 Uri.parse("android-app://com.example.mirko.poi/http/host/path")
         );
+
+        mSensorManager.unregisterListener(mSensorListener);
+
         AppIndex.AppIndexApi.end(client, viewAction);
         client.disconnect();
     }
