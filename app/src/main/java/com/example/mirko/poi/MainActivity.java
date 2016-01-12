@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Für das GPS
         final LocationManager mlocManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        LocationListener mloclistener = new MylocationListener((TextView) findViewById(R.id.location));
+        final LocationListener mloclistener = new MylocationListener((TextView) findViewById(R.id.location));
 
         //Erlaubnis muss abgefragt werden - gibt aber -1 zurück ???
         int check;
@@ -173,6 +173,9 @@ public class MainActivity extends AppCompatActivity {
                 }else {
 
                     //TODO Test, ob überhaupt GPS-Signal da ist -- zurzeit Absturz
+                    //Listener ist implementiert, muss "nur noch" anewendet werden
+                    mlocManager.addGpsStatusListener(mGPSStatusListener);
+
                     if(true){
 
                         //Entfernung Berechnen
@@ -212,6 +215,47 @@ public class MainActivity extends AppCompatActivity {
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
+
+    //Listener für Aktivitäten und Status des GPS
+    //Er kann mlocManager keiner Variablen zuordnen ... liegt womöglich am final des LocationManagers ... ich hasse Java manchmal -.-
+    public GpsStatus.Listener mGPSStatusListener = new GpsStatus.Listener()
+    {
+        public void onGpsStatusChanged(int event)
+        {
+            switch(event)
+            {
+                case GpsStatus.GPS_EVENT_STARTED:
+                    Toast.makeText(getApplicationContext(), "GPS_SEARCHING", Toast.LENGTH_SHORT).show();
+                    System.out.println("TAG - GPS searching: ");
+                    break;
+                case GpsStatus.GPS_EVENT_STOPPED:
+                    System.out.println("TAG - GPS Stopped");
+                    break;
+                case GpsStatus.GPS_EVENT_FIRST_FIX:
+
+                /*
+                 * GPS_EVENT_FIRST_FIX Event is called when GPS is locked
+                 */
+                    Toast.makeText(getApplicationContext(), "GPS_LOCKED", Toast.LENGTH_SHORT).show();
+                    //Location gpslocation = mlocManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+                   // if(gpslocation != null)
+                   // {
+                   //     System.out.println("GPS Info:"+gpslocation.getLatitude()+":"+gpslocation.getLongitude());
+
+                    /*
+                     * Removing the GPS status listener once GPS is locked
+                     */
+                       // mlocManager.removeGpsStatusListener(mGPSStatusListener);
+                    }
+
+                 //   break;
+                //case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
+                    //                 System.out.println("TAG - GPS_EVENT_SATELLITE_STATUS");
+                  //  break;
+            }
+        }
+    };
 
     //Listener für Sensoren
     public class MySensorListener implements SensorEventListener{
