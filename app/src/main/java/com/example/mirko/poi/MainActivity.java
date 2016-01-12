@@ -134,7 +134,11 @@ public class MainActivity extends AppCompatActivity {
         MyPoiObject mpo6 = new MyPoiObject(loc6, "Hier ist die Zentrale der Finsternis");
         myPoiObjectArrayList.add(mpo6);
 
-
+        Location loc7 = new Location("McDoof");
+        loc7.setLatitude(51.049857);
+        loc7.setLongitude(13.739554);
+        MyPoiObject mpo7 = new MyPoiObject(loc7, "McDoof Wilsdruffer Straße 19.");
+        myPoiObjectArrayList.add(mpo7);
 
         //TextToSpeech Listener
         android.speech.tts.TextToSpeech.OnInitListener tts_listener;
@@ -171,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
                 }else {
 
                     //TODO Test, ob überhaupt GPS-Signal da ist -- zurzeit Absturz
-                    if(true){
+                    if(mlocManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
 
                         //Entfernung Berechnen
                         for(MyPoiObject mpo : myPoiObjectArrayList){
@@ -193,13 +197,17 @@ public class MainActivity extends AppCompatActivity {
 
                                 //
 
+                                float calc_heading = Math.abs(((bearing + 360) % 360) - mSensorListener.getDegree());
+                                //Check Orientation - 60°
+                                if( (calc_heading > 330) || (calc_heading < 30)){
+                                    Toast.makeText(getApplicationContext(), "Entfernung zu " + mpo.getLoc().getProvider() + ": " + dist + " m", Toast.LENGTH_SHORT).show();
+                                    tts1.speak(mpo.getLoc().getProvider(), TextToSpeech.QUEUE_ADD, null);
+                                    tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
+                                    tts1.speak("Info", TextToSpeech.QUEUE_ADD, null);
+                                    tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
+                                    tts1.speak(mpo.getInfo(), TextToSpeech.QUEUE_ADD, null);
+                                }
 
-                                Toast.makeText(getApplicationContext(), "Entfernung zu " + mpo.getLoc().getProvider() + ": " + dist + " m", Toast.LENGTH_SHORT).show();
-                                tts1.speak(mpo.getLoc().getProvider(), TextToSpeech.QUEUE_ADD, null);
-                                tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
-                                tts1.speak("Info", TextToSpeech.QUEUE_ADD, null);
-                                tts1.playSilence(750, TextToSpeech.QUEUE_ADD, null);
-                                tts1.speak(mpo.getInfo(), TextToSpeech.QUEUE_ADD, null);
                             }
                         }
                     }
